@@ -1,0 +1,23 @@
+.header__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+    padding: 3rem 0;
+}
+
+.header__description {
+    margin: 0;
+    padding: 0 2rem;
+    line-height: 1.5;
+    width: 50%;
+    text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+    .header__description {
+        width: 100%;
+    }
+}
