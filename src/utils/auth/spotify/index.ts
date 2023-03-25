@@ -21,9 +21,9 @@ const isLoggedIn = () => {
 };
 
 export const isExpired = () => {
-    const now = new Date();
-    const expiration = new Date(localStorage.getItem("expires_at") as string);
-    return expiration < now;
+    const now = new Date().getTime();
+    const expiration = localStorage.getItem("expires_at") as string;
+    return parseInt(expiration) < now;
 };
 
 export { getUser, isLoggedIn };
