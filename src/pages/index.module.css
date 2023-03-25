@@ -59,6 +59,11 @@
 
 .button:disabled {
   opacity: .5;
+  cursor: not-allowed;
+}
+
+.textarea:disabled {
+  opacity: .5;
 }
 
 .background__2 {
