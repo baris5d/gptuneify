@@ -36,7 +36,7 @@ export default function SpotifyCallback() {
 
             if (user) localStorage.setItem("user", JSON.stringify(user));
 
-            navigate.push("/");
+            window.close();
         }
     }
 

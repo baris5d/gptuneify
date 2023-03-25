@@ -6,7 +6,6 @@ export default async function handler(
 ) {
     return refreshToken(req.body.refresh_token)
         .then((data) => {
-            console.log("data:", data);
             res.status(200).send(data);
         })
         .catch((error) => {

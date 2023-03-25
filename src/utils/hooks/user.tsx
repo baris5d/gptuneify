@@ -1,5 +1,3 @@
-// create a custom hook to use user information from localstorage
-
 import { User } from "@/types";
 import { useEffect, useState } from "react";
 import { isExpired } from "../auth/spotify";

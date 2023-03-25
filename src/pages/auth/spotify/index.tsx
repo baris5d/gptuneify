@@ -1,20 +1,22 @@
-import { useRouter } from "next/navigation";
 import styles from "./spotify.module.css";
+import { UserCard } from "@/components/UserCard";
+import { useEffect, useState } from "react";
+import { User } from "@/types";
 
 const SCOPE: string[] = [
     "user-read-private",
     "user-read-email",
     "user-library-modify",
     "user-library-read",
+    "playlist-modify-private",
+    "playlist-modify-public",
 ];
 
 const SPOTIFY_CLIENT_ID: string = process.env.SPOTIFY_CLIENT_ID!;
 const SPOTIFY_REDIRECT_URI: string = process.env.SPOTIFY_REDIRECT_URI!;
 
 export default function SpotifyConnect() {
-    //https://accounts.spotify.com/authorize?client_id=${process.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${process.env.SPOTIFY_REDIRECT_URI}&scope=user-read-private%20user-read-email%20user-library-modify%20user-library-read
-
-    const router = useRouter();
+    const [user, setUser] = useState<User>();
 
     const generateURL = () => {
         const url = new URL("https://accounts.spotify.com/authorize");
@@ -24,19 +26,44 @@ export default function SpotifyConnect() {
         url.searchParams.append("scope", SCOPE.join(" "));
         return url.toString();
     };
+    function handleStorage(event: any) {
+        const localUser = localStorage.getItem("user");
+        if (localUser) {
+            setUser(JSON.parse(localUser));
+        }
+    }
     const handleClick = () => {
-        router.push(generateURL());
+        window.open(generateURL(), "_blank");
+        window.addEventListener("storage", handleStorage);
     };
 
+    useEffect(() => {
+        // Clean up the event listener on component unmount
+        return () => {
+            window.removeEventListener("storage", handleStorage);
+        };
+    }, []);
+
+    useEffect(() => {
+        const localUser = localStorage.getItem("user");
+        if (localUser) {
+            setUser(JSON.parse(localUser));
+        }
+    }, []);
+
     return (
-        <main>
-            <div className={styles.container}>
-                <div className={styles.wrapper}>
-                    <button className={styles.button} onClick={handleClick}>
-                        Connect to Spotify
-                    </button>
+        <>
+            {!user && (
+                <div className={styles.container}>
+                    <div className={styles.wrapper}>
+                        <button className={styles.button} onClick={handleClick}>
+                            Login to Spotify
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </main>
+            )}
+
+            {user && <UserCard {...user} />}
+        </>
     );
 }
