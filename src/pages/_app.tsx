@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import "./globals.css";
 import type { AppProps } from "next/app";
 

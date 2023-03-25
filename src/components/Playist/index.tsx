@@ -1,0 +1,189 @@
+import SpotifyConnect from "@/pages/auth/spotify";
+import styles from "./playlist.module.css";
+import useUser from "@/utils/hooks/user";
+import { useEffect, useState } from "react";
+
+interface Audio {
+    trackName: string;
+    artistName: string;
+    duration: string;
+}
+
+interface Playlist {
+    playlistName: string;
+    playlistDescription: string;
+    tracks: Audio[];
+    user?: string;
+}
+
+const Audio = (props: Audio) => {
+    const { trackName, artistName, duration } = props;
+    return (
+        <div className={styles.audio}>
+            <div className={styles.audio__wrapper}>
+                <div className={styles.audio__title}>{trackName}</div>
+                <div className={styles.audio__signer}>{artistName}</div>
+            </div>
+            <div className={styles.audio__duration}>{duration}</div>
+        </div>
+    );
+};
+
+const LoginWarning = () => {
+    return (
+        <div className={styles.login__warning}>
+            <h2 className={styles.login__warning_title}>
+                You need to login to Spotify to see the playlist
+            </h2>
+        </div>
+    );
+};
+
+const AddToPlaylist = (props: Playlist) => {
+    const { playlistName, playlistDescription, tracks, user } = props;
+    const [isAdded, setIsAdded] = useState<boolean>(false);
+    const [isAdding, setIsAdding] = useState<boolean>(false);
+    const add = async () => {
+        setIsAdding(true);
+        fetch("/api/generate/playlist", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+            body: JSON.stringify({
+                playlist: tracks,
+                playlistName: playlistName,
+                playlistDescription: playlistDescription,
+                user: user,
+            }),
+        }).then((res) => {
+            if (res.status === 200) {
+                setIsAdded(true);
+                setIsAdding(false);
+            }
+        });
+    };
+
+    return (
+        <>
+            <button
+                className={styles.add__button}
+                onClick={add}
+                disabled={isAdded}
+            >
+                {/** Spinning */}
+                {isAdding && !isAdded && (
+                    <span className={styles.spinner}></span>
+                )}
+                {isAdded && (
+                    <>
+                        <svg
+                            viewBox="0 0 24 24"
+                            width="24"
+                            height="24"
+                            className={styles.added__icon}
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                fill="currentColor"
+                                d="M12,1.7c-5.5,0-10,4.5-10,10s4.5,10,10,10s10-4.5,10-10S17.5,1.7,12,1.7z M9.7,15.3l-3.3-3.3l1.4-1.4l1.9,1.9
+	l4.9-4.9l1.4,1.4L9.7,15.3z"
+                            />
+                        </svg>
+                        Added
+                    </>
+                )}
+                {!isAdded && !isAdding && (
+                    <>
+                        <svg
+                            viewBox="0 0 24 24"
+                            width="24"
+                            height="24"
+                            className={styles.add__icon}
+                        >
+                            <path
+                                fill="currentColor"
+                                d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,13H6V11H11V6H13V11H18V13H13V18H11V13Z"
+                            />
+                        </svg>
+                        Add to Library
+                    </>
+                )}
+            </button>
+        </>
+    );
+};
+
+export const Playlist = (props: Playlist) => {
+    const { playlistName, playlistDescription, tracks } = props;
+
+    const [user, setUser] = useState<any>();
+
+    function handleStorage(event: any) {
+        const localUser = localStorage.getItem("user");
+        if (localUser) {
+            setUser(JSON.parse(localUser));
+        }
+    }
+
+    useEffect(() => {
+        window.addEventListener("storage", handleStorage);
+        // Clean up the event listener on component unmount
+        return () => {
+            window.removeEventListener("storage", handleStorage);
+        };
+    }, []);
+
+    useEffect(() => {
+        const localUser = localStorage.getItem("user");
+        if (localUser) {
+            setUser(JSON.parse(localUser));
+        }
+    }, []);
+
+    return (
+        <>
+            {Object.keys(tracks).length && <SpotifyConnect />}
+            <div className={styles.playlist}>
+                <div className={styles.playlist__header}>
+                    <div className={styles.playlist__header_wrapper}>
+                        <h2 className={styles.playlist__title}>
+                            {playlistName}
+                        </h2>
+                        <h3 className={styles.playlist__description}>
+                            {playlistDescription}
+                        </h3>
+                    </div>
+                    <AddToPlaylist
+                        {...{
+                            playlistName: playlistName,
+                            playlistDescription: playlistDescription,
+                            tracks: tracks,
+                            user: user,
+                        }}
+                    />
+                </div>
+                {user && (
+                    <div className={styles.audio__container}>
+                        {tracks &&
+                            tracks.map((track: any, index) => {
+                                return <Audio {...track} key={index} />;
+                            })}
+                    </div>
+                )}
+                {!user && <LoginWarning />}
+                <div className={styles.background}>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default Playlist;
