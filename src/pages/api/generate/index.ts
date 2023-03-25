@@ -23,6 +23,7 @@ const SYSTEM_PROMPT = [
         content: `
             From now on only answer with JSON format. 
             Be careful about trailing commas, be sure that you're returning a valid JSON.
+            Do not use single quotes, use double quotes instead.
             Don't make any personal comments.
             Never ever break the character or make any comments on unintelligible responses.
             Generate a playlist with ${Math.floor(
