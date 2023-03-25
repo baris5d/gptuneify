@@ -1,7 +1,7 @@
 import SpotifyConnect from "@/pages/auth/spotify";
 import styles from "./playlist.module.css";
-import useUser from "@/utils/hooks/user";
 import { useEffect, useState } from "react";
+import { isExpired } from "@/utils/auth/spotify";
 
 interface Audio {
     trackName: string;
@@ -43,6 +43,47 @@ const AddToPlaylist = (props: Playlist) => {
     const { playlistName, playlistDescription, tracks, user } = props;
     const [isAdded, setIsAdded] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
+
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            checkUserExpired();
+        }
+    }, []);
+
+    const checkUserExpired = () => {
+        if (isExpired()) {
+            fetch("/api/auth/spotify/refresh", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    refresh_token: localStorage.getItem("refresh_token"),
+                }),
+            }).then((res) => {
+                if (res.ok) {
+                    res.json().then((data) => {
+                        const { access_token, refresh_token, expires_in } =
+                            data;
+                        localStorage.setItem("access_token", access_token);
+                        const expires_at =
+                            new Date().getTime() + expires_in * 1000;
+                        localStorage.setItem(
+                            "expires_at",
+                            expires_at.toString()
+                        );
+                        if (refresh_token)
+                            localStorage.setItem(
+                                "refresh_token",
+                                refresh_token
+                            );
+                    });
+                }
+            });
+        }
+    };
+
     const add = async () => {
         setIsAdding(true);
         fetch("/api/generate/playlist", {
@@ -94,7 +135,7 @@ const AddToPlaylist = (props: Playlist) => {
                         Added
                     </>
                 )}
-                {!isAdded && !isAdding && (
+                {
                     <>
                         <svg
                             viewBox="0 0 24 24"
@@ -109,7 +150,7 @@ const AddToPlaylist = (props: Playlist) => {
                         </svg>
                         Add to Library
                     </>
-                )}
+                }
             </button>
         </>
     );
