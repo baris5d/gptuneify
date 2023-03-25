@@ -1,10 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./index.module.css";
-import SpotifyConnect from "./auth/spotify";
-import useUser from "@/utils/hooks/user";
 import { Playlist } from "@/components/Playist";
 import { Header } from "@/components/Header";
+import Loader from "@/components/Loader";
 
 export default function Home() {
     const [message, setMessage] = useState("");
@@ -12,12 +11,10 @@ export default function Home() {
     const [playlist, setPlaylist] = useState<any>([]);
     const [conversation, setConversation] = useState<any>();
 
-    const user = useUser();
-
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         setIsSearching(true);
-        setMessage("");
+        setConversation("");
 
         const result = await fetch("/api/generate", {
             method: "POST",
@@ -36,6 +33,7 @@ export default function Home() {
                 setPlaylist(parsedList);
                 setConversation("");
                 setIsSearching(false);
+                setMessage("");
             } catch (e) {
                 setConversation(content);
                 setPlaylist([]);
@@ -54,6 +52,8 @@ export default function Home() {
                             type="text"
                             className={styles.textarea}
                             onChange={(_) => setMessage(_.target.value)}
+                            disabled={isSearching}
+                            value={message}
                         />
                         <button
                             className={styles.button}
@@ -76,6 +76,8 @@ export default function Home() {
                         )}
 
                     {!isSearching && conversation && <div>{conversation}</div>}
+
+                    {isSearching && <Loader />}
                 </div>
             </div>
             <div className={styles.background__2}>
