@@ -1,0 +1,16 @@
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    /* Spotify Buttun */
+    border: 1px solid #1db954;
+    background: transparent;
+    color: #1db954;
+    padding: .825rem 2rem;
+    border-radius: 5rem;
+    font-size: 1.1rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    cursor: pointer;
+}
