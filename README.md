@@ -1,38 +1,37 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# GPTuneify
 
-## Getting Started
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/baris5d)
 
-First, run the development server:
+GPTuneify is a tool that generates playlists for Spotify based on the user's taste and mood. It uses OpenAI GPT-3 to generate playlists based on the user's input. It also uses Spotify's API to create the playlists.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## Built with
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+-   [Next.js](https://nextjs.org/)
+-   [Spotify API](https://developer.spotify.com/documentation/web-api/)
+-   [OpenAI GPT-3](https://openai.com/blog/openai-api/)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How to run the project locally
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+> Get your spotify client id and secret from [here](https://developer.spotify.com/dashboard/applications)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+> Get your OpenAI API key from [here](https://platform.openai.com/account/api-keys)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Clone the repository
+2. Run `npm install` or `yarn install` to install the dependencies
+3. `mv .env.example .env` and fill in the environment variables
+4. Run `npm run dev` or `yarn dev` to start the development server
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How to contribute
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. Fork the repository
+2. Clone the repository
+3. Pick an issue from the issues tab or create one
+4. Create a new branch
+5. Make your changes
+6. Commit your changes in conventional commits format (i.e. feat: playlist page (#issueNumber))
+7. Push your changes
+8. Create a pull request
