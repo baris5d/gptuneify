@@ -21,10 +21,6 @@ GPTuneify is a tool that generates playlists for Spotify based on the user's tas
 3. `mv .env.example .env` and fill in the environment variables
 4. Run `npm run dev` or `yarn dev` to start the development server
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ## How to contribute
 
 1. Fork the repository
@@ -35,3 +31,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 6. Commit your changes in conventional commits format (i.e. feat: playlist page (#issueNumber))
 7. Push your changes
 8. Create a pull request
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
