@@ -1,4 +1,6 @@
 import styles from "./header.module.css";
+import Image from "next/image";
+
 export const Header = () => {
     return (
         <div className={styles.header__wrapper}>
@@ -8,6 +10,16 @@ export const Header = () => {
                 intelligent playlist creator that adapts to your mood in
                 real-time.
             </p>
+            <div className={styles.links}>
+                <a href="https://github.com/baris5d/gptuneify" target="_blank">
+                    <Image
+                        src="/github-mark.svg"
+                        alt="Github"
+                        width={30}
+                        height={30}
+                    />
+                </a>
+            </div>
         </div>
     );
 };
