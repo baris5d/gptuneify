@@ -2,6 +2,7 @@ import SpotifyConnect from "@/pages/auth/spotify";
 import styles from "./playlist.module.css";
 import { useEffect, useState } from "react";
 import { isExpired } from "@/utils/auth/spotify";
+import { Error } from "@/components/Error";
 
 interface Audio {
     trackName: string;
@@ -43,6 +44,7 @@ const AddToPlaylist = (props: Playlist) => {
     const { playlistName, playlistDescription, tracks, user } = props;
     const [isAdded, setIsAdded] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
         const user = localStorage.getItem("user");
@@ -102,6 +104,12 @@ const AddToPlaylist = (props: Playlist) => {
             if (res.status === 200) {
                 setIsAdded(true);
                 setIsAdding(false);
+            } else {
+                setIsAdded(false);
+                setIsAdding(false);
+                setErrorMessage(
+                    "Something went wrong, please try again later."
+                );
             }
         });
     };
@@ -135,7 +143,7 @@ const AddToPlaylist = (props: Playlist) => {
                         Added
                     </>
                 )}
-                {
+                {!isAdded && !isAdding && !errorMessage && (
                     <>
                         <svg
                             viewBox="0 0 24 24"
@@ -150,8 +158,12 @@ const AddToPlaylist = (props: Playlist) => {
                         </svg>
                         Add to Library
                     </>
-                }
+                )}
             </button>
+
+            {!isAdded && !isAdding && errorMessage && (
+                <Error message={errorMessage} />
+            )}
         </>
     );
 };
