@@ -4,17 +4,36 @@ import styles from "./index.module.css";
 import { Playlist } from "@/components/Playist";
 import { Header } from "@/components/Header";
 import Loader from "@/components/Loader";
+import Error from "@/components/Error";
+
+const loaderMessages = [
+    "Alright, we are trying to find best playlist for you... 👨🏻‍💻",
+    "It usually takes around 30 seconds to create a playlist... 🤔",
+    "Please wait... 🙇🏻‍♂️",
+    "If you think it takes too long, it's all we can do... 😬 ",
+    "We are sorry for the inconvenience. Still doing my job... 🚜",
+    "Hang on, we're almost there! 🎵",
+    "Good things come to those who wait... 🎧",
+    "Music is worth waiting for... 🎶",
+    "Playlist creation in progress... 🎼",
+    "Sit tight, we'll have your playlist ready in no time... 🎹",
+    "Creating your perfect playlist... 🎧",
+    "Our team of experts is hand-picking the best songs for you... 🎤",
+    "Don't worry, we haven't forgotten about you... 🎵",
+    "We're working hard to make your playlist awesome... 🎶",
+    "Thanks for your patience, we're almost done... 🎧",
+];
 
 export default function Home() {
     const [message, setMessage] = useState("");
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [playlist, setPlaylist] = useState<any>([]);
-    const [conversation, setConversation] = useState<any>();
+    const [errorMessage, setErrorMessage] = useState<any>();
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         setIsSearching(true);
-        setConversation("");
+        setErrorMessage("");
 
         const result = await fetch("/api/generate", {
             method: "POST",
@@ -31,11 +50,11 @@ export default function Home() {
             try {
                 const parsedList = JSON.parse(content);
                 setPlaylist(parsedList);
-                setConversation("");
+                setErrorMessage("");
                 setIsSearching(false);
                 setMessage("");
             } catch (e) {
-                setConversation(content);
+                setErrorMessage(content);
                 setPlaylist([]);
                 setIsSearching(false);
             }
@@ -63,11 +82,6 @@ export default function Home() {
                             Generate
                         </button>
                     </form>
-                    {conversation && (
-                        <div className={styles.conversation}>
-                            <p>{conversation}</p>
-                        </div>
-                    )}
 
                     {!isSearching &&
                         playlist &&
@@ -75,9 +89,14 @@ export default function Home() {
                             <Playlist {...playlist} />
                         )}
 
-                    {!isSearching && conversation && <div>{conversation}</div>}
-
-                    {isSearching && <Loader />}
+                    {!isSearching && errorMessage && (
+                        <Error
+                            message={
+                                "Whoops! GPTuneify could not generate a playlist for you. You must be more specific with your taste or your mood."
+                            }
+                        />
+                    )}
+                    {isSearching && <Loader loaderMessages={loaderMessages} />}
                 </div>
             </div>
             <div className={styles.background__2}>
