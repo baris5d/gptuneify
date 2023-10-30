@@ -63,6 +63,32 @@
   cursor: not-allowed;
 }
 
+.action_bar {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap
+}
+
+.previous_playlists__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  appearance: none;
+  background: transparent;
+  margin: 0 1rem .5rem auto;
+  cursor: pointer;
+}
+
+.previous_playlists__button > svg {
+  fill: #fff;
+  margin-right: .25rem;
+}
+
+.previous_playlists__button:hover {
+  color: #1db954;
+}
+
 .textarea:disabled {
   opacity: .5;
 }
