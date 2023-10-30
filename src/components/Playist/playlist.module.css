@@ -191,6 +191,11 @@
     color: #fff;
 }
 
+.add__button_added {
+    background: #1db954;
+    color: #fff;
+}
+
 .spinner {
     width: 24px;
     height: 24px;
