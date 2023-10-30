@@ -18,7 +18,7 @@ interface Playlist {
     playlistDescription: string;
     tracks: Audio[];
     exclusionList: string[];
-    onPlaylistCreated?: () => void;
+    onPlaylistCreated?: (playlistId: string) => void;
     user?: string;
 }
 
@@ -129,8 +129,8 @@ const AddToPlaylist = (props: Playlist) => {
                 setIsAdding(false);
                 res.json().then((data) => {
                     setPlaylistUri(data.uri);
+                    onPlaylistCreated?.(data.id);
                 })
-                onPlaylistCreated?.();
             } else {
                 setIsAdded(false);
                 setIsAdding(false);
@@ -194,7 +194,7 @@ const AddToPlaylist = (props: Playlist) => {
 };
 
 export const Playlist = (props: Playlist) => {
-    const { playlistName, playlistDescription, tracks } = props;
+    const { playlistName, playlistDescription, tracks, onPlaylistCreated } = props;
     const [user, setUser] = useState<any>();
     const [exclusionList, setExclusionList] = useState<string[]>([]);
     const [isPlaylistCreated, setIsPlaylistCreated] = useState<boolean>(
@@ -218,8 +218,9 @@ export const Playlist = (props: Playlist) => {
         }
     }
 
-    function handlePlaylistCreated() {
+    function handlePlaylistCreated(playlistId: string) {
         setIsPlaylistCreated(true);
+        onPlaylistCreated?.(playlistId);
     }
 
     useEffect(() => {
