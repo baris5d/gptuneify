@@ -5,6 +5,7 @@ import { Playlist } from "@/components/Playist";
 import { Header } from "@/components/Header";
 import Loader from "@/components/Loader";
 import Error from "@/components/Error";
+import { Prompts } from "@/components/Prompts";
 
 const loaderMessages = [
     "Alright, we are trying to find best playlist for you... 👨🏻‍💻",
@@ -29,10 +30,12 @@ export default function Home() {
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [playlist, setPlaylist] = useState<any>([]);
     const [errorMessage, setErrorMessage] = useState<any>();
+    const [showPrompts, setShowPrompts] = useState<boolean>(true);
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         setIsSearching(true);
+        setShowPrompts(false);
         setErrorMessage("");
 
         const result = await fetch("/api/generate", {
@@ -57,9 +60,14 @@ export default function Home() {
                 setErrorMessage(content);
                 setPlaylist([]);
                 setIsSearching(false);
+                setShowPrompts(true);
             }
         });
     };
+
+    const handlePromptClick = (prompt: string) => {
+        setMessage(prompt);
+    }
 
     return (
         <main>
@@ -99,6 +107,7 @@ export default function Home() {
                     {isSearching && <Loader loaderMessages={loaderMessages} />}
                 </div>
             </div>
+            {showPrompts && <Prompts onPromptClick={handlePromptClick}/> }
             <div className={styles.background__2}>
                 <div></div>
                 <div></div>
