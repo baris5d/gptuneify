@@ -1,6 +1,6 @@
 import SpotifyConnect from "@/pages/auth/spotify";
 import styles from "./playlist.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { isExpired } from "@/utils/auth/spotify";
 import { Error } from "@/components/Error";
 
@@ -8,19 +8,37 @@ interface Audio {
     trackName: string;
     artistName: string;
     duration: string;
+    showExcludeButton?: boolean;
+    isExcluded?: boolean;
+    onExcludeToggle?: (trackName: string, artistName: string) => void;
 }
 
 interface Playlist {
     playlistName: string;
     playlistDescription: string;
     tracks: Audio[];
+    exclusionList: string[];
+    onPlaylistCreated?: () => void;
     user?: string;
 }
 
 const Audio = (props: Audio) => {
-    const { trackName, artistName, duration } = props;
+    const { trackName, artistName, duration, isExcluded, onExcludeToggle, showExcludeButton } = props;
+
     return (
-        <div className={styles.audio}>
+        <div className={`${styles.audio} ${isExcluded && styles.audio__excluded}`}>
+            {showExcludeButton && (
+            <button
+                className={`${styles.audio__toggle} ${isExcluded ? styles.audio__toggle__excluded : styles.audio__toggle__included}`}
+                onClick={() => onExcludeToggle?.(trackName, artistName)} 
+                title={isExcluded ? "Include in Playlist" : "Exclude from Playlist"}
+            >
+                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="12" cy="12" r="9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+            </button>
+            )}
             <div className={styles.audio__wrapper}>
                 <div className={styles.audio__title}>{trackName}</div>
                 <div className={styles.audio__signer}>{artistName}</div>
@@ -41,7 +59,7 @@ const LoginWarning = () => {
 };
 
 const AddToPlaylist = (props: Playlist) => {
-    const { playlistName, playlistDescription, tracks, user } = props;
+    const { playlistName, playlistDescription, tracks, user, exclusionList, onPlaylistCreated } = props;
     const [isAdded, setIsAdded] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const [playlistUri, setPlaylistUri] = useState<string>("");
@@ -87,6 +105,10 @@ const AddToPlaylist = (props: Playlist) => {
         }
     };
 
+    const filteredTracks = useMemo(() => {
+        return tracks.filter((track) => !exclusionList.includes(`${track.trackName} - ${track.artistName}`));
+    }, [tracks, exclusionList]);
+
     const add = async () => {
         setIsAdding(true);
         fetch("/api/generate/playlist", {
@@ -96,7 +118,7 @@ const AddToPlaylist = (props: Playlist) => {
                 Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
             body: JSON.stringify({
-                playlist: tracks,
+                playlist: filteredTracks,
                 playlistName: playlistName,
                 playlistDescription: playlistDescription,
                 user: user,
@@ -108,6 +130,7 @@ const AddToPlaylist = (props: Playlist) => {
                 res.json().then((data) => {
                     setPlaylistUri(data.uri);
                 })
+                onPlaylistCreated?.();
             } else {
                 setIsAdded(false);
                 setIsAdding(false);
@@ -172,14 +195,31 @@ const AddToPlaylist = (props: Playlist) => {
 
 export const Playlist = (props: Playlist) => {
     const { playlistName, playlistDescription, tracks } = props;
-
     const [user, setUser] = useState<any>();
+    const [exclusionList, setExclusionList] = useState<string[]>([]);
+    const [isPlaylistCreated, setIsPlaylistCreated] = useState<boolean>(
+        false
+    );
 
     function handleStorage(event: any) {
         const localUser = localStorage.getItem("user");
         if (localUser) {
             setUser(JSON.parse(localUser));
         }
+    }
+
+    function handleExcludeToggle(trackName: string, artistName: string) {
+        const track = `${trackName} - ${artistName}`;
+        if (exclusionList.includes(track)) {
+            const newList = exclusionList.filter((item) => item !== track);
+            setExclusionList(newList);
+        } else {
+            setExclusionList([...exclusionList, track]);
+        }
+    }
+
+    function handlePlaylistCreated() {
+        setIsPlaylistCreated(true);
     }
 
     useEffect(() => {
@@ -216,14 +256,22 @@ export const Playlist = (props: Playlist) => {
                             playlistDescription: playlistDescription,
                             tracks: tracks,
                             user: user,
+                            exclusionList,
+                            onPlaylistCreated: handlePlaylistCreated,
                         }}
                     />
                 </div>
                 {user && (
                     <div className={styles.audio__container}>
                         {tracks &&
-                            tracks.map((track: any, index) => {
-                                return <Audio {...track} key={index} />;
+                            tracks.filter((track) => isPlaylistCreated ? !exclusionList.includes(`${track.trackName} - ${track.artistName}`) : true).map((track: any) => {
+                                return <Audio 
+                                    {...track}
+                                    key={`${track.trackName} - ${track.artistName}`}
+                                    isExcluded={exclusionList.includes(`${track.trackName} - ${track.artistName}`)}
+                                    onExcludeToggle={handleExcludeToggle} 
+                                    showExcludeButton={!isPlaylistCreated}
+                                />;
                             })}
                     </div>
                 )}

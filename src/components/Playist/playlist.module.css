@@ -70,6 +70,42 @@
     color: #a3a3a3;
 }
 
+.audio__toggle {
+    appearance: none;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.audio__toggle > svg {
+    width: 100%;
+    height: 100%;
+    stroke: #1db954;
+}
+
+.audio__toggle__included:hover, .audio__toggle__excluded {
+    transform: rotate(45deg);
+}
+
+.audio__toggle__included:hover > svg, .audio__toggle__excluded > svg {
+    stroke: #ba4943;
+}
+
+.audio__toggle__excluded:hover {
+    transform: rotate(0deg);
+}
+
+.audio__toggle__excluded:hover > svg {
+    stroke: #1db954;
+}
+
+.audio__excluded .audio__wrapper {
+    opacity: .5;
+    text-decoration: line-through;
+}
+
 .background {
     position: absolute;
     overflow: hidden;
