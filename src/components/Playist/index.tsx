@@ -44,6 +44,7 @@ const AddToPlaylist = (props: Playlist) => {
     const { playlistName, playlistDescription, tracks, user } = props;
     const [isAdded, setIsAdded] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
+    const [playlistUri, setPlaylistUri] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
@@ -104,6 +105,9 @@ const AddToPlaylist = (props: Playlist) => {
             if (res.status === 200) {
                 setIsAdded(true);
                 setIsAdding(false);
+                res.json().then((data) => {
+                    setPlaylistUri(data.uri);
+                })
             } else {
                 setIsAdded(false);
                 setIsAdding(false);
@@ -116,6 +120,22 @@ const AddToPlaylist = (props: Playlist) => {
 
     return (
         <>
+            {isAdded ? (
+                <a className={`${styles.add__button} ${styles.add__button_added}`} href={playlistUri}>
+                    <svg
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                        className={styles.add__icon}
+                    >
+                        <path
+                            fill="currentColor"
+                            d="M8,5.14V19.14L19,12.14L8,5.14Z"
+                        />
+                    </svg>
+                    Ready to Listen on Spotify
+                </a>
+            ) : (
             <button
                 className={styles.add__button}
                 onClick={add}
@@ -124,24 +144,6 @@ const AddToPlaylist = (props: Playlist) => {
                 {/** Spinning */}
                 {isAdding && !isAdded && (
                     <span className={styles.spinner}></span>
-                )}
-                {isAdded && (
-                    <>
-                        <svg
-                            viewBox="0 0 24 24"
-                            width="24"
-                            height="24"
-                            className={styles.added__icon}
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                fill="currentColor"
-                                d="M12,1.7c-5.5,0-10,4.5-10,10s4.5,10,10,10s10-4.5,10-10S17.5,1.7,12,1.7z M9.7,15.3l-3.3-3.3l1.4-1.4l1.9,1.9
-	l4.9-4.9l1.4,1.4L9.7,15.3z"
-                            />
-                        </svg>
-                        Added
-                    </>
                 )}
                 {!isAdded && !isAdding && !errorMessage && (
                     <>
@@ -159,7 +161,7 @@ const AddToPlaylist = (props: Playlist) => {
                         Add to Library
                     </>
                 )}
-            </button>
+            </button>)}
 
             {!isAdded && !isAdding && errorMessage && (
                 <Error message={errorMessage} />
